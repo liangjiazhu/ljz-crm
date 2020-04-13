@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lljz.crm.mapper.EmployeeMapper">
+
+    <!-- 员工映射结果 -->
+    <resultMap id="EmployeeResult" type="com.lljz.crm.entity.Employee">
+        <id column="emp_id" property="empId" />
+        <result column="emp_name" property="empName" />
+        <result column="pass" property="pass" />
+        <result column="salt" property="salt" />
+        <result column="age" property="age" />
+        <result column="sex" property="sex" />
+        <result column="phone" property="phone" />
+        <result column="address" property="address" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_del" property="isDel" />
+        <collection  property="roleList" javaType="java.util.List"  resultMap="RoleResult" />
+    </resultMap>
+    <!-- 角色映射结果 -->
+    <resultMap id="RoleResult" type="com.lljz.crm.entity.Role">
+        <result column="role_id" property="roleId" />
+        <result column="role_name" property="roleName" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_del" property="isDel" />
+        <collection  property="permissionList" javaType="java.util.List"  resultMap="PermissionResult" />
+        <collection  property="departmentList" javaType="java.util.List"  resultMap="DepartmentResult" />
+    </resultMap>
+
+    <!-- 权限映射结果 -->
+    <resultMap id="PermissionResult" type="com.lljz.crm.entity.Permission">
+        <result column="par_id" property="parId" />
+        <result column="par_name" property="parName" />
+        <result column="url" property="url" />
+        <result column="permission" property="permission" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+    <!-- 部门映射结果 -->
+    <resultMap id="DepartmentResult" type="com.lljz.crm.entity.Department">
+        <result column="dep_id" property="depId" />
+        <result column="dep_name" property="depName" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+      select distinct e.emp_id,emp_name,pass, salt,age,sex,phone,address,e.create_time,e.update_time,e.is_del,
+                r.role_id,r.role_name,p.per_id,p.per_name,p.permission,p.url,d.dep_id,d.dep_name
+	    from employee e
+	        LEFT JOIN emp_role er on e.emp_id = er.emp_id		-- 员工和角色的关系
+	        LEFT JOIN role r on r.role_id = er.role_id
+					LEFT JOIN perm_role rp ON r.role_id= rp.role_id
+					LEFT JOIN permission p ON p.per_id= rp.per_id
+					LEFT JOIN dep_role dr ON r.role_id = dr.role_id
+					LEFT JOIN department d ON d.dep_id = dr.dep_id
+    </sql>
+
+    <select id="selectList" resultMap="EmployeeResult">
+        <include refid="Base_Column_List" />
+        where e.is_del = 0 GROUP BY e.emp_id
+    </select>
+
+    <select id="selectByName" parameterType="String" resultMap="EmployeeResult">
+        <include refid="Base_Column_List" />
+        where emp_name = #{eName} and e.is_del = 0
+    </select>
+
+</mapper>

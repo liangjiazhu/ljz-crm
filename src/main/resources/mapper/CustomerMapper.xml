@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lljz.crm.mapper.CustomerMapper">
+
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="CustomerResult" type="com.lljz.crm.entity.Customer">
+        <id column="cus_id" property="cusId" />
+        <result column="cus_name" property="cusName" />
+        <result column="phone" property="phone" />
+        <result column="cus_source" property="cusSource" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_del" property="isDel" />
+        <result column="emp_id" property="empId"/>
+        <result column="emp_name" property="empName"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+       SELECT distinct c.cus_id,c.cus_name,c.cus_source,c.phone,c.update_time,c.create_time,e.emp_id,e.emp_name FROM customer c
+        LEFT JOIN cus_emp ce ON  c.cus_id=ce.cus_id LEFT JOIN employee e ON e.emp_id=ce.emp_id
+    </sql>
+
+
+    <select id="selectList" resultMap="CustomerResult">
+        <include refid="Base_Column_List" />
+        where c.is_del = 0 and e.emp_id=#{empId} GROUP BY c.cus_id
+    </select>
+
+</mapper>

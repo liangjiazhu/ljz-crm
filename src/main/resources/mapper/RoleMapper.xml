@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lljz.crm.mapper.RoleMapper">
+
+
+
+    <!-- 角色映射结果 -->
+    <resultMap id="RoleResult" type="com.lljz.crm.entity.Role">
+        <result column="role_id" property="roleId" />
+        <result column="role_name" property="roleName" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_del" property="isDel" />
+        <collection  property="permissionList" javaType="java.util.List"  resultMap="PermissionResult" />
+        <collection  property="departmentList" javaType="java.util.List"  resultMap="DepartmentResult" />
+    </resultMap>
+
+    <!-- 权限映射结果 -->
+    <resultMap id="PermissionResult" type="com.lljz.crm.entity.Permission">
+        <result column="par_id" property="parId" />
+        <result column="per_name" property="perName" />
+        <result column="url" property="url" />
+        <result column="permission" property="permission" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+
+
+    <!-- 部门映射结果 -->
+    <resultMap id="DepartmentResult" type="com.lljz.crm.entity.Department">
+        <result column="dep_id" property="depId" />
+        <result column="dep_name" property="depName" />
+        <result column="create_time" property="createTime" />
+        <result column="update_time" property="updateTime" />
+        <result column="is_del" property="isDel" />
+    </resultMap>
+
+
+    <!-- 通用查询结果列 -->
+    <sql id="role">
+         select distinct r.role_id,r.role_name,p.per_id,p.per_name,p.permission,p.url
+	    from role r
+					LEFT JOIN perm_role rp ON r.role_id= rp.role_id
+					LEFT JOIN permission p ON p.per_id= rp.per_id
+    </sql>
+
+
+
+    <select id="selectList" resultMap="RoleResult">
+        <include refid="role" />
+        where r.is_del = 0
+    </select>
+
+
+
+</mapper>
